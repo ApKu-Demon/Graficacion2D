@@ -28,7 +28,8 @@ typedef struct _circulo
 	Vec2 pos;
 	float r;
 	int vert;
-	char offset_mem1[8];
+	int borde;
+	char offset_mem1[4];
 	Color color;
 	TypeFig type;
 }Circulo;
@@ -82,4 +83,5 @@ typedef union _figuras
 
 void draw_figura(Figuras *fig);
 void fill_figura(Figuras *fig);
+void fill(Vec2 pos, uint32_t color);
 

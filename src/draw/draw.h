@@ -21,7 +21,7 @@ void draw_cuadrado(int x0, int y0, int largo, int altura, uint32_t color);	// si
 
 void draw_circuloTrig(int radio, int x, int y, int numvertices, uint32_t color);
 
-void draw_circuloPM(int radio, int xc, int yc, uint32_t color);
+void draw_circuloPM(int radio, int xc, int yc, int borde, uint32_t color);
 
 void draw_linea(int x0, int y0, int x1, int y1, uint32_t color);
 

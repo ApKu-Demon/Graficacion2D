@@ -12,4 +12,6 @@ EstadosRender estadosrender = {
 	.figuras_buffer = 0
 };
 
+TTF_Font* font = NULL;
+
 

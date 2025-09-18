@@ -6,6 +6,7 @@
 #include "math/vectores.h"
 #include "draw/figuras.h"
 #include "memoria/memoria.h"
+#include "gui/ui.h"
 
 #include <stdlib.h>
 #include <math.h>
@@ -78,6 +79,8 @@ void render_input(void)
 			punto_seleccionado = NULL;
 		}
 	}
+
+	update_ui(&estadosrender.evento);
 }
 
 void clear_color_buffer(void) 
@@ -107,116 +110,70 @@ void copy_buffer_to_texture(void)
 
 void _init(void) 
 {
-	//inicializar todas las variables que se usaran
-	Vec2 pc1 = {{400.f, 360.f}};
-	Vec2 pc2 = {{600.f, 100.f}};
-	Vec2 pc3 = {{800.f, 360.f}};
-	
-	Linea linea = {
-		.p1 = (Vec2){{800, 100}},
-		.p2 = (Vec2){{600, 250}},
-		.offset_mem1 = {0},
-		.color = (Color){0xab00abff},
-		.type = LINEA
-	};
-
-	Curva curva = {
-		.p1 = pc1,
-		.p2 = pc2,
-		.p3 = pc3,
-		.color = (Color){0xffff00ff},
-		.type = CURVA
-	};
-
-	Circulo circulo = {
-		.pos = {{estadosrender.ven_width/2.f, estadosrender.ven_height/2.f}},
-		.r = 20.f,
-		.vert = 32,
-		.offset_mem1 = {0},
-		.color = (Color){0x00ffffff},
-		.type = CIRC
-	};
-
-	Cuadro cuadro = {
-		.pos = {.unpack = {.x = 140, .y = 140}},
-		.h = 200,
-		.w = 200,
-		.offset_mem1 = {0},
-		.color = (Color){0x140140ff},
-		.type = CUADRO
-	};
-
-	Triangulo triangulo = {
-		.p1 = {.unpack = {.x = 400, .y = 620}},
-		.p2 = {.unpack = {.x = 600, .y = 360}},
-		.p3 = {.unpack = {.x = 800, .y = 620}},
-		.color = (Color){0xffffffff},
-		.type = TRIAN
-	};
-
-	Figuras test = {*(FigComun*)&linea};
-	Figuras test2 = {.curva=curva};
-	Figuras test3 = {*(FigComun*)&circulo};
-	Figuras test4 = {.cuadro = cuadro};
-	Figuras test5 = {.triangulo = triangulo};
-
-	pushto_array(estadosrender.figuras_buffer, test);
-	pushto_array(estadosrender.figuras_buffer, test2);
-	pushto_array(estadosrender.figuras_buffer, test3);
-	pushto_array(estadosrender.figuras_buffer, test4);
-	pushto_array(estadosrender.figuras_buffer, test5);
-
+	TTF_Init();
+	//SDL_SetTextureBlendMode(estadosrender.textura, SDL_BLENDMODE_BLEND);
+	font = TTF_OpenFont("src/assets/fonts/Arial Black.ttf", 24);
+	if (!font) {
+		SDL_Log("Error al cargar fuente: %s", SDL_GetError());
+		exit(1);
+	}
+	init_ui();
 }
 
 
 
 void update(void) 
 {
-	/*
-	Vec2 pc1 = {{400.f, 360.f}};
-	Vec2 pc2 = {{600.f, 100.f}};
-	Vec2 pc3 = {{800.f, 360.f}};
-	
-	Linea linea = {
-		.p1 = (Vec2){{800, 100}},
-		.p2 = (Vec2){{600, 250}},
-		.offset_mem1 = {0},
-		.color = (Color){0xab00abff},
-		.type = LINEA
-	};
-
-	Curva curva = {
-		.p1 = pc1,
-		.p2 = pc2,
-		.p3 = pc3,
-		.color = (Color){0xffff00ff},
-		.type = CURVA
-	};
-
-	Circulo circulo = {
-		.pos = {{estadosrender.ven_width/2.f, estadosrender.ven_height/2.f}},
-		.r = 20.f,
-		.vert = 32,
-		.offset_mem1 = {0},
-		.color = (Color){0x00ffffff},
-		.type = CIRC
-	};
-
-	Figuras test = {*(FigComun*)&linea};
-	Figuras test2 = {.curva=curva};
-	Figuras test3 = {*(FigComun*)&circulo};
-
-	draw_figura(&test);
-	draw_figura(&test2);
-	draw_figura(&test3);
-	*/
+	//SDL_SetRenderDrawColor(estadosrender.renderer, 0, 0, 0, 255); // fondo negro
+	//SDL_RenderClear(estadosrender.renderer);
 
 	// ciclo draw
-	for(int i=0; i<array_size(estadosrender.figuras_buffer); i++)
-	{
-		draw_figura(&estadosrender.figuras_buffer[i]);
-		fill_figura(&estadosrender.figuras_buffer[i]);
-	}
+    for (int i = 0; i < array_size(estadosrender.figuras_buffer); i++) {
+        draw_figura(&estadosrender.figuras_buffer[i]);
+        fill_figura(&estadosrender.figuras_buffer[i]);
+    }
+
+    render_ui();
+	copy_buffer_to_texture();
+	render_ui_texto();
+
+
+    // Renderiza texto adicional (como "Fuente OK")
+	/*
+    if (font) {
+        SDL_Color color = {255, 255, 255, 255};
+        SDL_Surface* surface = TTF_RenderText_Blended(font, "Fuente OK", strlen("Fuente OK"), color);
+        if (!surface) return;
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(estadosrender.renderer, surface);
+        SDL_DestroySurface(surface);
+        if (!texture) return;
+
+        float w, h;
+        SDL_GetTextureSize(texture, &w, &h);
+        SDL_FRect dest = { 100, 100, w, h };
+        SDL_Log("Renderizando texto en (%.2f, %.2f)", dest.x, dest.y);
+		SDL_RenderTexture(estadosrender.renderer, texture, NULL, &dest);
+		SDL_Log("Texto renderizado");
+        SDL_DestroyTexture(texture);
+    }
+
+	SDL_SetRenderDrawColor(estadosrender.renderer, 0, 0, 0, 255);
+	SDL_RenderClear(estadosrender.renderer);
+
+	SDL_Color color = {255, 255, 255, 255};
+	SDL_Surface* surface = TTF_RenderText_Blended(font, "TEST", strlen("TEST"), color);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(estadosrender.renderer, surface);
+	SDL_DestroySurface(surface);
+
+	float w, h;
+	SDL_GetTextureSize(texture, &w, &h);
+	SDL_FRect dest = {100, 100, w, h};
+	SDL_RenderTexture(estadosrender.renderer, texture, NULL, &dest);
+	SDL_DestroyTexture(texture);
+
+	SDL_RenderPresent(estadosrender.renderer);
+	*/
 }
 
 

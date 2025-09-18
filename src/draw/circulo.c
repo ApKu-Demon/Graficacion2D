@@ -21,33 +21,36 @@ void draw_circuloTrig(int radio, int x, int y, int numvertices, uint32_t color)
 }
 
 
-void draw_circuloPM(int radio, int xc, int yc, uint32_t color)
+void draw_circuloPM(int radio, int xc, int yc, int borde, uint32_t color)
 {
-	int x = 0;
-	int y = radio;
-	int p = 1 - radio;
-
-	while(x <= y)
+	for (int r = radio - borde + 1; r <= radio; r++)
 	{
-		draw_pixel(xc + x, yc + y, color);
-		draw_pixel(xc - x, yc + y, color);
-		draw_pixel(xc + x, yc - y, color);
-		draw_pixel(xc - x, yc - y, color);
-		draw_pixel(xc + y, yc + x, color);
-		draw_pixel(xc - y, yc + x, color);
-		draw_pixel(xc + y, yc - x, color);
-		draw_pixel(xc - y, yc - x, color);
-		x++;
+		int x = 0;
+		int y = r;
+		int p = 1 - r;
 
-		if(p<0)
-		{ 
-			p += (2 * x) + 1;
-		}
-		
-		else
+		while(x <= y)
 		{
-			y--;
-			p += 2 * (x - y) + 1;
+			draw_pixel(xc + x, yc + y, color);
+			draw_pixel(xc - x, yc + y, color);
+			draw_pixel(xc + x, yc - y, color);
+			draw_pixel(xc - x, yc - y, color);
+			draw_pixel(xc + y, yc + x, color);
+			draw_pixel(xc - y, yc + x, color);
+			draw_pixel(xc + y, yc - x, color);
+			draw_pixel(xc - y, yc - x, color);
+			x++;
+
+			if(p<0)
+			{ 
+				p += (2 * x) + 1;
+			}
+			
+			else
+			{
+				y--;
+				p += 2 * (x - y) + 1;
+			}
 		}
 	}
 }

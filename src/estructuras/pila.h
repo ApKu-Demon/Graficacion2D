@@ -11,3 +11,4 @@ typedef struct pila
 void push(Pila *pila, void *dato);
 void* pop(Pila *pila);
 
+
